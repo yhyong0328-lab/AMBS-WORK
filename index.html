@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARTE MUSEUM BUSAN — 시스템팀 업무일지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1f22;
+    --paper:#f4f2ec;
+    --panel:#ffffff;
+    --line:#d8d3c4;
+    --line-strong:#b9b09a;
+    --navy:#22303f;
+    --brass:#a9793f;
+    --brass-soft:#e9dcc4;
+    --ok:#3c6e52;
+    --ok-bg:#e4efe7;
+    --warn:#a14b3a;
+    --warn-bg:#f5e6e0;
+    --shadow: 0 1px 2px rgba(27,31,34,.06), 0 8px 24px rgba(27,31,34,.05);
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #fbfaf6 0%, transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans KR', -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:80px;
+  }
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:var(--navy);
+    color:#f4f2ec;
+    padding:14px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+    box-shadow:0 2px 12px rgba(0,0,0,.18);
+  }
+  .brand{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .brand .mark{
+    font-family:'Space Mono', monospace;
+    font-weight:700; letter-spacing:.14em; font-size:11px;
+    color:var(--brass-soft);
+    border:1px solid rgba(233,220,196,.35);
+    padding:3px 8px; border-radius:999px;
+  }
+  .brand h1{font-size:16px; font-weight:700; margin:0; letter-spacing:.01em;}
+  .brand .sub{font-size:12px; color:#c7cdd4; font-weight:400;}
+  .toolbar{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .btn{
+    appearance:none; border:1px solid rgba(244,242,236,.25);
+    background:rgba(244,242,236,.08); color:#f4f2ec;
+    font-family:inherit; font-size:12.5px; font-weight:600;
+    padding:8px 13px; border-radius:8px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .btn:hover{background:rgba(244,242,236,.18);}
+  .btn:active{transform:translateY(1px);}
+  .btn.primary{background:var(--brass); border-color:var(--brass); color:#231a10;}
+  .btn.primary:hover{background:#bd8a4c;}
+  .save-state{font-size:11.5px; color:#a7d6b6; font-family:'Space Mono',monospace; min-width:118px;}
+  .save-state.dirty{color:#e8c07f;}
+
+  .tabs{
+    position:sticky; top:57px; z-index:40;
+    display:flex; gap:2px; background:#e9e5d8;
+    padding:0 24px; border-bottom:1px solid var(--line-strong);
+    overflow-x:auto;
+  }
+  .tab{
+    appearance:none; border:none; background:transparent;
+    font-family:inherit; font-size:13.5px; font-weight:600; color:#6b6558;
+    padding:13px 18px 11px; cursor:pointer; white-space:nowrap;
+    border-bottom:3px solid transparent;
+  }
+  .tab .n{font-family:'Space Mono',monospace; font-size:10.5px; margin-right:6px; opacity:.6;}
+  .tab.active{color:var(--navy); border-bottom-color:var(--brass); background:var(--paper);}
+  .tab:hover:not(.active){color:var(--navy);}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:30px 24px 10px;}
+  .sheet{display:none;}
+  .sheet.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .hero{
+    background:var(--navy);
+    color:#f4f2ec;
+    border-radius:var(--radius);
+    padding:26px 28px;
+    margin-bottom:22px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-40px; top:-40px; width:180px; height:180px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(169,121,63,.35), transparent 70%);
+  }
+  .hero .eyebrow{font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.16em; color:var(--brass-soft); text-transform:uppercase;}
+  .hero h2{font-size:24px; margin:6px 0 4px; font-weight:700;}
+  .hero p{margin:0; font-size:13px; color:#c7cdd4;}
+  .meta-row{display:flex; gap:22px; margin-top:16px; flex-wrap:wrap;}
+  .meta-item{font-size:12px; color:#c7cdd4;}
+  .meta-item b{display:block; color:#fff; font-size:14px; font-weight:600; margin-top:2px;}
+
+  .section-label{
+    display:flex; align-items:center; gap:10px;
+    margin:30px 0 12px;
+  }
+  .section-label .num{
+    font-family:'Space Mono',monospace; font-size:11px; color:#fff;
+    background:var(--brass); border-radius:5px; padding:3px 7px; font-weight:700;
+  }
+  .section-label h3{font-size:15px; margin:0; font-weight:700; color:var(--navy);}
+  .section-label .hint{font-size:11.5px; color:#8a8371; margin-left:auto;}
+
+  table.grid{
+    width:100%; border-collapse:collapse; background:var(--panel);
+    border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);
+    border:1px solid var(--line);
+  }
+  table.grid th{
+    background:#eef1f4; color:var(--navy); font-size:12.5px; font-weight:700;
+    padding:11px 10px; border:1px solid var(--line); text-align:center;
+  }
+  table.grid td{
+    border:1px solid var(--line); padding:9px 11px; font-size:13px; vertical-align:middle;
+  }
+  table.grid td.cat{
+    background:#f7f5ef; font-weight:700; color:var(--navy); text-align:center; font-size:13px;
+  }
+  table.grid td.item[contenteditable="true"], table.grid td.note[contenteditable="true"], table.grid td[contenteditable="true"]{
+    outline:none; cursor:text;
+  }
+  table.grid td[contenteditable="true"]:focus{
+    background:#fffbea; box-shadow:inset 0 0 0 1.5px var(--brass);
+  }
+  table.grid td[contenteditable="true"]:empty::before{
+    content:attr(data-ph); color:#a39c8a; font-weight:400;
+  }
+  table.grid td.center{text-align:center;}
+  input[type="date"]{
+    font-family:inherit; font-size:12.5px; border:1px solid var(--line); border-radius:6px;
+    padding:5px 6px; width:100%; color:var(--ink); background:#fff;
+  }
+  input[type="date"]:focus{outline:none; border-color:var(--brass); box-shadow:0 0 0 2px var(--brass-soft);}
+
+  .check-pill{
+    display:inline-flex; align-items:center; gap:6px; cursor:pointer; user-select:none;
+    font-size:12px; font-weight:600; color:#8a8371;
+  }
+  .check-pill input{width:15px; height:15px; accent-color:var(--ok);}
+  .check-pill.checked{color:var(--ok);}
+
+  .status-select{
+    font-family:inherit; font-size:12px; font-weight:700; border-radius:999px;
+    padding:5px 12px; border:1px solid var(--line-strong); cursor:pointer; width:100%;
+    text-align:center; -webkit-appearance:none; appearance:none;
+  }
+  .status-select.완료{background:var(--ok-bg); color:var(--ok); border-color:#bcd9c6;}
+  .status-select.미완료{background:var(--warn-bg); color:var(--warn); border-color:#e3bfb2;}
+  .status-select.진행중{background:#fdf1da; color:#8a5d1f; border-color:#e9cf9b;}
+
+  .row-actions{display:flex; gap:6px; justify-content:center;}
+  .icon-btn{
+    border:1px solid var(--line-strong); background:#fff; border-radius:6px; cursor:pointer;
+    width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center;
+    color:#8a8371; font-size:14px; line-height:1;
+  }
+  .icon-btn:hover{border-color:var(--warn); color:var(--warn); background:var(--warn-bg);}
+  .add-row-btn{
+    width:100%; padding:12px; margin-top:10px; border:1.5px dashed var(--line-strong);
+    background:transparent; border-radius:var(--radius); cursor:pointer;
+    color:var(--navy); font-family:inherit; font-weight:700; font-size:12.5px;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .add-row-btn:hover{border-color:var(--brass); color:var(--brass); background:#fffdf7;}
+
+  .photo-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;}
+  @media (max-width: 900px){.photo-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width: 620px){.photo-grid{grid-template-columns:1fr;}}
+  .photo-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column;
+  }
+  .photo-card .cap{
+    padding:10px 12px; font-size:12.5px; font-weight:600; color:var(--navy);
+    border-bottom:1px solid var(--line); background:#f7f5ef; outline:none; min-height:20px;
+  }
+  .photo-card .cap:focus{background:#fffbea; box-shadow:inset 0 0 0 1.5px var(--brass);}
+  .photo-card .cap:empty::before{content:attr(data-ph); color:#a39c8a; font-weight:500;}
+  .photo-slot{
+    aspect-ratio:4/3; position:relative; background:
+      repeating-linear-gradient(45deg, #f4f2ec, #f4f2ec 10px, #eee9db 10px, #eee9db 20px);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    overflow:hidden;
+  }
+  .photo-slot img{width:100%; height:100%; object-fit:cover; display:block;}
+  .photo-slot .placeholder{
+    display:flex; flex-direction:column; align-items:center; gap:6px; color:#8a8371;
+    font-size:11.5px; font-weight:600; text-align:center; padding:10px;
+  }
+  .photo-slot .placeholder svg{opacity:.55;}
+  .photo-slot input[type=file]{position:absolute; inset:0; opacity:0; cursor:pointer;}
+  .photo-slot .remove-photo{
+    position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:50%;
+    background:rgba(27,31,34,.65); color:#fff; border:none; display:none;
+    align-items:center; justify-content:center; cursor:pointer; font-size:13px; z-index:2;
+  }
+  .photo-slot.has-img .remove-photo{display:flex;}
+
+  .checklist-foot-note{
+    font-size:11.5px; color:#8a8371; margin-top:10px; line-height:1.6;
+  }
+
+  footer.page-footer{
+    max-width:1180px; margin:40px auto 0; padding:16px 24px; color:#a39c8a; font-size:11px;
+    display:flex; justify-content:space-between; border-top:1px solid var(--line);
+  }
+
+  @media print{
+    .topbar,.tabs,.add-row-btn,.icon-btn,.remove-photo,footer.page-footer{display:none !important;}
+    body{background:#fff; padding:0;}
+    .sheet{display:block !important; page-break-after:always;}
+    .wrap{padding:12px;}
+    .hero{background:#22303f !important; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="mark">AMBS · FACILITY LOG</span>
+      <h1>시스템팀 업무일지 <span class="sub" id="lblSub">2026년 5월</span></h1>
+      <div class="month-nav" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;">
+        <button id="monthPrev" title="이전 달" style="background:rgba(244,242,236,.08);border:1px solid rgba(244,242,236,.22);color:#f4f2ec;border-radius:6px;width:28px;height:26px;cursor:pointer;font-size:15px;line-height:1;">‹</button>
+        <span id="monthLabel" style="font-family:'Space Mono',monospace;font-size:12.5px;color:#e8e4da;min-width:96px;text-align:center;">2026년 5월</span>
+        <button id="monthNext" title="다음 달" style="background:rgba(244,242,236,.08);border:1px solid rgba(244,242,236,.22);color:#f4f2ec;border-radius:6px;width:28px;height:26px;cursor:pointer;font-size:15px;line-height:1;">›</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <span id="presence" title="현재 이 문서를 열고 있는 편집자 수" style="font-size:11.5px;font-family:'Space Mono',monospace;color:#9fb0c0;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid rgba(244,242,236,.18);border-radius:999px;"><span id="presenceDot" style="width:8px;height:8px;border-radius:50%;background:#8a8371;display:inline-block;"></span><span id="presenceText">연결 중…</span></span>
+      <span class="save-state" id="saveState">동기화 준비 중…</span>
+      <button class="btn" id="printBtn">🖨 인쇄 / PDF</button>
+      <button class="btn" id="resetBtn">⟲ 원본으로 초기화</button>
+      <button class="btn primary" id="downloadBtn">⭳ 현재 상태로 저장</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <section class="sheet active" id="sheet1">
+      <div class="hero">
+        <div class="eyebrow">ARTE MUSEUM BUSAN</div>
+        <h2 id="lblH1">5월 시스템팀 업무</h2>
+        <p>업무자별 월 업무와 완료 여부를 기록합니다. 셀을 클릭하면 바로 수정할 수 있고, 행·업무자를 추가/삭제할 수 있습니다.</p>
+        <div class="meta-row">
+          <div class="meta-item">담당 부서<b>시스템팀</b></div>
+          <div class="meta-item">기록 월<b id="lblMonth1">2026년 5월</b></div>
+          <div class="meta-item">업무자<b id="workerCount">-</b></div>
+        </div>
+      </div>
+
+      <div class="section-label"><span class="num">01</span><h3>월 업무 현황</h3><span class="hint">업무자 · 월 업무 · 완료 여부 · 비고</span></div>
+      <table class="grid" id="workTable">
+        <thead>
+          <tr>
+            <th style="width:16%">업무자</th>
+            <th>월 업무</th>
+            <th style="width:10%">완료 여부</th>
+            <th style="width:20%">비고</th>
+            <th style="width:6%"></th>
+          </tr>
+        </thead>
+        <tbody id="workBody"><!-- injected by JS --></tbody>
+      </table>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+        <button class="add-row-btn" data-add="worker" style="flex:1; min-width:180px;">＋ 업무자 추가</button>
+      </div>
+      <div class="checklist-foot-note">※ 완료 여부 체크박스는 업무별로 개별 기록됩니다. 업무자 이름 옆의 ＋로 해당 업무자의 업무를 추가하고, ✕로 삭제할 수 있습니다.</div>
+    </section>
+
+  </div>
+
+  <footer class="page-footer">
+    <span>ARTE MUSEUM BUSAN · System Team Work Log</span>
+    <span>원본: AMBS_시스템팀업무_26_05.xlsx</span>
+  </footer>
+
+<!-- Firebase Realtime Database SDK (실시간 공동 편집용) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* ============================================================================
+   ▼▼▼  여기 5줄만 채우면 실시간 공동 편집이 켜집니다  ▼▼▼
+   (채우기 전에는 기존처럼 이 브라우저에만 저장되는 "로컬 모드"로 동작합니다)
+
+   설정값 얻는 법:
+   1) https://console.firebase.google.com 접속 → 프로젝트 추가(무료)
+   2) 왼쪽 "빌드 → Realtime Database" → 데이터베이스 만들기
+      → 위치 선택 → "테스트 모드로 시작" 선택
+   3) 프로젝트 설정(⚙) → 내 앱 → 웹 앱 추가(</>) → firebaseConfig 값을 아래에 복사
+   ============================================================================ */
+const FIREBASE_CONFIG = {
+  apiKey:      "AIzaSyAZ2Xj3gaLTMlSptKTDfm-IgI_vAe81Xrc",
+  authDomain:  "ambs-67ad1.firebaseapp.com",
+  databaseURL: "https://ambs-67ad1-default-rtdb.firebaseio.com",
+  projectId:   "ambs-67ad1",
+  appId:       "1:662915824256:web:c70f60e2bbab4076148465"
+};
+
+// 같은 문서를 공유하려면 팀원 모두가 아래 값을 동일하게 유지해야 합니다.
+// 현재 보고 있는 연/월 (월별로 데이터가 분리 저장됩니다)
+let curYear = 2026, curMonth = 5;
+function roomId(){ return "work-" + curYear + "-" + String(curMonth).padStart(2, "0"); }
+function localKey(){ return "ambs_facility_local_" + roomId(); }
+/* ▲▲▲  여기까지만 수정하세요  ▲▲▲ */
+</script>
+
+<script>
+/* ---------------------------------------------------------------------
+   Data model — 업무일지 (업무자별 월 업무)
+   · DEFAULT_DATA : 매월 반복되는 기본 템플릿 (완료여부·비고 비어 있음)
+   · MAY_DATA     : 2026년 5월 실제 업무 내역 (원본 엑셀 반영)
+--------------------------------------------------------------------- */
+const DEFAULT_DATA = {
+  workers: [
+    { name:"고민준 부팀장", tasks:[
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""}
+    ]},
+    { name:"김민수 매니저", tasks:[
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""}
+    ]},
+    { name:"김민성 주임", tasks:[
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""}
+    ]}
+  ]
+};
+
+const MAY_DATA = {
+  workers: [
+    { name:"고민준 부팀장", tasks:[
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""}
+    ]},
+    { name:"김민수 매니저", tasks:[
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""}
+    ]},
+    { name:"김민성 주임", tasks:[
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""},
+      {task:"", done:false, note:""}
+    ]}
+  ]
+};
+
+
+/* =====================================================================
+   실시간 공동 편집 엔진 (Firebase Realtime Database)
+   설정이 비어 있으면 자동으로 로컬 모드로 전환됩니다.
+===================================================================== */
+let DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+const CLIENT_ID = Math.random().toString(36).slice(2);
+let dataRef = null, presenceRef = null;
+let firebaseReady = false;
+let applyingRemote = false;
+let saveTimer = null;
+
+function configFilled(){
+  try { return window.firebase && !FIREBASE_CONFIG.apiKey.includes("여기에"); }
+  catch(e){ return false; }
+}
+
+/* ---- 상태 표시 UI ---- */
+function setSaving(){
+  const el = document.getElementById('saveState');
+  if(el){ el.textContent = "동기화 중…"; el.classList.add('dirty'); }
+}
+function setSaved(){
+  const el = document.getElementById('saveState');
+  if(!el) return;
+  const prefix = firebaseReady ? "실시간 동기화됨 · " : "로컬 저장됨 · ";
+  el.textContent = prefix + new Date().toLocaleTimeString('ko-KR');
+  el.classList.remove('dirty');
+}
+let isConnected = false;
+let presenceCount = 1;
+function refreshStatus(){
+  const dot = document.getElementById('presenceDot');
+  const txt = document.getElementById('presenceText');
+  if(!dot || !txt) return;
+  if(!firebaseReady){
+    dot.style.background = "#8a8371";
+    txt.textContent = "로컬 모드";
+    return;
+  }
+  if(isConnected){
+    dot.style.background = "#5fd08a";
+    txt.textContent = "접속 " + (presenceCount || 1) + "명";
+  } else {
+    dot.style.background = "#e0a24a";
+    txt.textContent = "재연결 중…";
+  }
+}
+function updatePresence(count, connected){
+  if(typeof connected === 'boolean') isConnected = connected;
+  if(typeof count === 'number') presenceCount = count;
+  refreshStatus();
+}
+
+/* ---- Firebase 초기화 ---- */
+let db = null;
+let myPresenceRef = null;
+
+function initSync(){
+  if(!configFilled()){
+    firebaseReady = false;
+    updateMonthLabels();
+    loadLocalFallback();
+    renderAll();
+    updatePresence(0, false);
+    return;
+  }
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    firebaseReady = true;
+
+    // 접속 상태 감지 (방/월과 무관하게 한 번만 연결)
+    db.ref('.info/connected').on('value', function(s){
+      isConnected = !!s.val();
+      if(isConnected && myPresenceRef){
+        myPresenceRef.onDisconnect().remove();
+        myPresenceRef.set(true);
+      }
+      refreshStatus();
+    });
+
+    updateMonthLabels();
+    subscribeRoom();      // 현재 월의 데이터 구독
+  } catch(e){
+    console.warn("Firebase init 실패, 로컬 모드로 전환:", e);
+    firebaseReady = false;
+    updateMonthLabels();
+    loadLocalFallback();
+    renderAll();
+    updatePresence(0, false);
+  }
+}
+
+// 현재 월(roomId)의 데이터/프레즌스를 구독
+function subscribeRoom(){
+  dataRef = db.ref('rooms/' + roomId() + '/data');
+  presenceRef = db.ref('rooms/' + roomId() + '/presence');
+  myPresenceRef = presenceRef.child(CLIENT_ID);
+
+  // 이 달이 비어 있으면 기본 데이터로 초기화 (5월은 실제 업무내역, 그 외 달은 빈 템플릿)
+  dataRef.once('value').then(function(snap){
+    if(!snap.exists()){
+      var seed = (roomId() === "work-2026-05") ? MAY_DATA : DEFAULT_DATA;
+      DATA = normalizeData(JSON.parse(JSON.stringify(seed)));
+      renderAll();
+      dataRef.set(wrap(DATA));
+    }
+  });
+
+  // 원격 변경 실시간 수신
+  dataRef.on('value', function(snap){
+    const val = snap.val();
+    if(!val || !val.data) return;
+    if(val.by === CLIENT_ID) return;
+    applyRemote(val.data);
+  });
+
+  // 이 달을 보고 있는 사람 표시
+  if(isConnected){
+    myPresenceRef.onDisconnect().remove();
+    myPresenceRef.set(true);
+  }
+  presenceRef.on('value', function(p){
+    presenceCount = p.numChildren();
+    refreshStatus();
+  });
+}
+
+// 현재 월 구독 해제 (월 이동 시)
+function unsubscribeRoom(){
+  try { if(dataRef) dataRef.off(); } catch(e){}
+  try { if(presenceRef) presenceRef.off(); } catch(e){}
+  try { if(myPresenceRef) myPresenceRef.remove(); } catch(e){}
+}
+
+// 월 이동 (delta: -1 이전달, +1 다음달)
+function changeMonth(delta){
+  let m = curMonth + delta, y = curYear;
+  while(m < 1){ m += 12; y--; }
+  while(m > 12){ m -= 12; y++; }
+  curYear = y; curMonth = m;
+
+  updateMonthLabels();
+  // 화면을 즉시 빈(기본) 상태로 리셋 — 이전 달 내용이 잠깐 보이지 않게
+  DATA = normalizeData(JSON.parse(JSON.stringify(DEFAULT_DATA)));
+  renderAll();
+
+  if(firebaseReady && db){
+    unsubscribeRoom();
+    presenceCount = 1;
+    refreshStatus();
+    subscribeRoom();     // 새 달 데이터 구독 (있으면 불러오고, 없으면 새로 만듦)
+  } else {
+    loadLocalFallback(); // 로컬 모드: 해당 월 저장분 불러오기
+    renderAll();
+    setSaved();
+  }
+}
+
+// 화면의 모든 월 표시 갱신
+function updateMonthLabels(){
+  const ym = curYear + "년 " + curMonth + "월";
+  const mm = curMonth + "월";
+  setLabel('monthLabel', ym);
+  setLabel('lblSub', ym);
+  setLabel('lblH1', mm + " 시스템팀 업무");
+  setLabel('lblMonth1', ym);
+  document.title = "ARTE MUSEUM BUSAN — " + mm + " 시스템팀 업무일지";
+}
+function setLabel(id, text){ const el = document.getElementById(id); if(el) el.textContent = text; }
+
+function wrap(d){ return { data: d, by: CLIENT_ID, at: Date.now() }; }
+
+function pushData(){
+  if(firebaseReady && dataRef){
+    dataRef.set(wrap(DATA)).then(setSaved).catch(function(err){
+      console.warn("저장 실패:", err);
+    });
+  } else {
+    try { localStorage.setItem(localKey(), JSON.stringify(DATA)); } catch(e){}
+    setSaved();
+  }
+}
+
+function loadLocalFallback(){
+  try {
+    const raw = localStorage.getItem(localKey());
+    DATA = raw ? normalizeData(JSON.parse(raw)) : normalizeData(JSON.parse(JSON.stringify(DEFAULT_DATA)));
+  } catch(e){
+    DATA = normalizeData(JSON.parse(JSON.stringify(DEFAULT_DATA)));
+  }
+}
+
+function markDirty(){
+  if(applyingRemote) return;
+  setSaving();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(pushData, 400);
+}
+
+/* ---- 원격 변경 적용 (편집 중 커서 위치 보존) ---- */
+function getFocusInfo(){
+  const el = document.activeElement;
+  if(el && el.dataset && el.dataset.path){
+    let offset = 0;
+    const sel = window.getSelection();
+    if(sel && sel.rangeCount) offset = sel.getRangeAt(0).startOffset;
+    return { path: el.dataset.path, offset: offset };
+  }
+  return null;
+}
+function restoreFocus(info){
+  if(!info) return;
+  const el = document.querySelector('[data-path="' + info.path + '"]');
+  if(!el) return;
+  el.focus();
+  try {
+    const sel = window.getSelection();
+    const range = document.createRange();
+    const node = el.firstChild;
+    if(node){
+      const max = node.textContent.length;
+      range.setStart(node, Math.min(info.offset, max));
+    } else {
+      range.setStart(el, 0);
+    }
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } catch(e){}
+}
+/* Firebase는 빈 배열([])을 저장할 때 통째로 삭제하고, 배열을 {0:..,1:..}
+   객체로 바꿔 돌려주기도 합니다. 아래 함수가 그런 변형/누락을 원래 배열 형태로
+   되돌려서, 새로고침해도 화면이 깨지지 않도록 합니다. */
+function toArray(v){
+  if(Array.isArray(v)) return v;
+  if(v && typeof v === 'object'){
+    return Object.keys(v).sort(function(a,b){ return a - b; }).map(function(k){ return v[k]; });
+  }
+  return [];
+}
+function normalizeData(d){
+  d = (d && typeof d === 'object') ? d : {};
+  d.workers = toArray(d.workers);
+  d.workers.forEach(function(w){
+    if(w && typeof w === 'object'){
+      if(typeof w.name !== 'string') w.name = "";
+      w.tasks = toArray(w.tasks);
+    }
+  });
+  return d;
+}
+
+function applyRemote(newData){
+  const info = getFocusInfo();
+  applyingRemote = true;
+  DATA = normalizeData(newData);
+  renderAll();
+  applyingRemote = false;
+  restoreFocus(info);
+  setSaved();
+}
+
+/* ---------------------------------------------------------------------
+   이미지 압축 (동기화 용량 절감: 최대 1280px / JPEG 82%)
+--------------------------------------------------------------------- */
+function compressImage(file, cb){
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = new Image();
+    img.onload = function(){
+      const max = 1280;
+      let w = img.width, h = img.height;
+      if(w > max || h > max){
+        const r = Math.min(max / w, max / h);
+        w = Math.round(w * r); h = Math.round(h * r);
+      }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      try { cb(c.toDataURL('image/jpeg', 0.82)); }
+      catch(err){ cb(e.target.result); }
+    };
+    img.onerror = function(){ cb(e.target.result); };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ---------------------------------------------------------------------
+   월 업무 표 렌더 (업무자별)
+--------------------------------------------------------------------- */
+function renderWorkTable(){
+  const body = document.getElementById('workBody');
+  body.innerHTML = "";
+  DATA.workers.forEach(function(worker, wi){
+    if(!worker.tasks || worker.tasks.length === 0){ worker.tasks = [{task:"", done:false, note:""}]; }
+    worker.tasks.forEach(function(t, ti){
+      const tr = document.createElement('tr');
+
+      if(ti === 0){
+        const tdName = document.createElement('td');
+        tdName.className = 'cat';
+        tdName.rowSpan = worker.tasks.length;
+        tdName.style.verticalAlign = 'top';
+
+        const nameEl = document.createElement('div');
+        nameEl.contentEditable = "true";
+        nameEl.dataset.path = 'workers.' + wi + '.name';
+        nameEl.dataset.ph = "이름 입력…";
+        nameEl.textContent = worker.name || "";
+        nameEl.style.cssText = 'font-weight:700; outline:none; min-height:1.2em;';
+        nameEl.addEventListener('input', function(){ DATA.workers[wi].name = nameEl.textContent; markDirty(); });
+        tdName.appendChild(nameEl);
+
+        const btnRow = document.createElement('div');
+        btnRow.style.cssText = 'display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;';
+
+        const addTaskBtn = document.createElement('button');
+        addTaskBtn.type = 'button'; addTaskBtn.className = 'icon-btn';
+        addTaskBtn.textContent = '＋ 업무';
+        addTaskBtn.title = '이 업무자에 업무 추가';
+        addTaskBtn.style.cssText = 'font-size:11px; padding:3px 8px; width:auto;';
+        addTaskBtn.addEventListener('click', function(){
+          DATA.workers[wi].tasks.push({task:"", done:false, note:""});
+          renderWorkTable(); markDirty();
+        });
+        btnRow.appendChild(addTaskBtn);
+
+        const delWorkerBtn = document.createElement('button');
+        delWorkerBtn.type = 'button'; delWorkerBtn.className = 'icon-btn';
+        delWorkerBtn.textContent = '✕ 삭제';
+        delWorkerBtn.title = '이 업무자 전체 삭제';
+        delWorkerBtn.style.cssText = 'font-size:11px; padding:3px 8px; width:auto;';
+        delWorkerBtn.addEventListener('click', function(){
+          if(!confirm('업무자 "' + (worker.name || "") + '" 전체를 삭제할까요?')) return;
+          DATA.workers.splice(wi, 1);
+          renderWorkTable(); markDirty();
+        });
+        btnRow.appendChild(delWorkerBtn);
+
+        tdName.appendChild(btnRow);
+        tr.appendChild(tdName);
+      }
+
+      const tdTask = document.createElement('td');
+      tdTask.className = 'item';
+      tdTask.contentEditable = "true";
+      tdTask.dataset.path = 'workers.' + wi + '.tasks.' + ti + '.task';
+      tdTask.dataset.ph = "업무 내용 입력…";
+      tdTask.textContent = t.task || "";
+      tdTask.addEventListener('input', function(){ DATA.workers[wi].tasks[ti].task = tdTask.textContent; markDirty(); });
+      tr.appendChild(tdTask);
+
+      const tdDone = document.createElement('td');
+      tdDone.className = 'center';
+      const label = document.createElement('label');
+      label.className = 'check-pill' + (t.done ? ' checked' : '');
+      label.innerHTML = '<input type="checkbox" ' + (t.done ? 'checked' : '') + '> 완료';
+      label.querySelector('input').addEventListener('change', function(e){
+        DATA.workers[wi].tasks[ti].done = e.target.checked;
+        label.classList.toggle('checked', e.target.checked);
+        markDirty();
+      });
+      tdDone.appendChild(label);
+      tr.appendChild(tdDone);
+
+      const tdNote = document.createElement('td');
+      tdNote.className = 'note';
+      tdNote.contentEditable = "true";
+      tdNote.dataset.path = 'workers.' + wi + '.tasks.' + ti + '.note';
+      tdNote.dataset.ph = "비고…";
+      tdNote.textContent = t.note || "";
+      tdNote.addEventListener('input', function(){ DATA.workers[wi].tasks[ti].note = tdNote.textContent; markDirty(); });
+      tr.appendChild(tdNote);
+
+      const tdAct = document.createElement('td');
+      const del = document.createElement('button');
+      del.type = 'button'; del.className = 'icon-btn'; del.innerHTML = '✕';
+      del.title = '이 업무 삭제';
+      del.addEventListener('click', function(){
+        DATA.workers[wi].tasks.splice(ti, 1);
+        if(DATA.workers[wi].tasks.length === 0){ DATA.workers[wi].tasks.push({task:"", done:false, note:""}); }
+        renderWorkTable(); markDirty();
+      });
+      const wrapAct = document.createElement('div');
+      wrapAct.className = 'row-actions';
+      wrapAct.appendChild(del);
+      tdAct.appendChild(wrapAct);
+      tr.appendChild(tdAct);
+
+      body.appendChild(tr);
+    });
+  });
+  const wc = document.getElementById('workerCount');
+  if(wc) wc.textContent = DATA.workers.length + "명";
+}
+
+/* 업무자 추가 버튼 */
+(function(){
+  const addWorkerBtn = document.querySelector('[data-add="worker"]');
+  if(addWorkerBtn) addWorkerBtn.addEventListener('click', function(){
+    DATA.workers.push({ name:"", tasks:[{task:"", done:false, note:""}] });
+    renderWorkTable();
+    markDirty();
+  });
+})();
+
+/* ---------------------------------------------------------------------
+   Toolbar actions
+--------------------------------------------------------------------- */
+document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+
+document.getElementById('resetBtn').addEventListener('click', function(){
+  if(!confirm("모든 수정 내용을 지우고 원본 상태로 되돌릴까요?\n공유 중이라면 모든 팀원에게도 즉시 반영됩니다. 이 작업은 되돌릴 수 없습니다.")) return;
+  DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  renderAll();
+  markDirty();
+});
+
+document.getElementById('downloadBtn').addEventListener('click', function(){
+  pushData();
+  const clone = document.documentElement.cloneNode(true);
+  const scripts = clone.querySelectorAll('script');
+  let target = null;
+  scripts.forEach(function(s){ if(s.textContent.indexOf('const DEFAULT_DATA') !== -1) target = s; });
+  if(target){
+    target.textContent = target.textContent.replace(
+      /const DEFAULT_DATA = [\s\S]*?\n\};/,
+      "const DEFAULT_DATA = " + JSON.stringify(DATA) + ";"
+    );
+  }
+  const htmlStr = "<!DOCTYPE html>\n" + clone.outerHTML;
+  const blob = new Blob([htmlStr], {type:"text/html"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = "AMBS_시스템팀_업무일지_" + stamp + ".html";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+/* ---------------------------------------------------------------------
+   Init
+--------------------------------------------------------------------- */
+function renderAll(){
+  renderWorkTable();
+}
+
+DATA = normalizeData(DATA);
+// 월 이동 화살표
+(function(){
+  const prev = document.getElementById('monthPrev');
+  const next = document.getElementById('monthNext');
+  if(prev) prev.addEventListener('click', function(){ changeMonth(-1); });
+  if(next) next.addEventListener('click', function(){ changeMonth(1); });
+})();
+
+DATA = normalizeData(DATA);
+updateMonthLabels();
+initSync();
+renderAll();
+setSaved();
+</script>
+</body>
+</html>
