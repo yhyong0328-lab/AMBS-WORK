@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ARTE MUSEUM BUSAN — 시스템팀 업무일지</title>
+<title>ARTE MUSEUM BUSAN — 10월 시스템팀 업무일지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#1b1f22;
@@ -242,16 +241,16 @@
   <div class="topbar">
     <div class="brand">
       <span class="mark">AMBS · FACILITY LOG</span>
-      <h1>시스템팀 업무일지 <span class="sub" id="lblSub">2026년 5월</span></h1>
+      <h1>시스템팀 업무일지 <span class="sub" id="lblSub">2026년 10월</span></h1>
       <div class="month-nav" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;">
         <button id="monthPrev" title="이전 달" style="background:rgba(244,242,236,.08);border:1px solid rgba(244,242,236,.22);color:#f4f2ec;border-radius:6px;width:28px;height:26px;cursor:pointer;font-size:15px;line-height:1;">‹</button>
-        <span id="monthLabel" style="font-family:'Space Mono',monospace;font-size:12.5px;color:#e8e4da;min-width:96px;text-align:center;">2026년 5월</span>
+        <span id="monthLabel" style="font-family:'Space Mono',monospace;font-size:12.5px;color:#e8e4da;min-width:96px;text-align:center;">2026년 10월</span>
         <button id="monthNext" title="다음 달" style="background:rgba(244,242,236,.08);border:1px solid rgba(244,242,236,.22);color:#f4f2ec;border-radius:6px;width:28px;height:26px;cursor:pointer;font-size:15px;line-height:1;">›</button>
       </div>
     </div>
     <div class="toolbar">
-      <span id="presence" title="현재 이 문서를 열고 있는 편집자 수" style="font-size:11.5px;font-family:'Space Mono',monospace;color:#9fb0c0;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid rgba(244,242,236,.18);border-radius:999px;"><span id="presenceDot" style="width:8px;height:8px;border-radius:50%;background:#8a8371;display:inline-block;"></span><span id="presenceText">연결 중…</span></span>
-      <span class="save-state" id="saveState">동기화 준비 중…</span>
+      <span id="presence" title="현재 이 문서를 열고 있는 편집자 수" style="font-size:11.5px;font-family:'Space Mono',monospace;color:#9fb0c0;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid rgba(244,242,236,.18);border-radius:999px;"><span id="presenceDot" style="width: 8px; height: 8px; border-radius: 50%; background: rgb(95, 208, 138); display: inline-block;"></span><span id="presenceText">접속 1명</span></span>
+      <span class="save-state" id="saveState">실시간 동기화됨 · 오전 11:12:41</span>
       <button class="btn" id="printBtn">🖨 인쇄 / PDF</button>
       <button class="btn" id="resetBtn">⟲ 원본으로 초기화</button>
       <button class="btn primary" id="downloadBtn">⭳ 현재 상태로 저장</button>
@@ -263,12 +262,12 @@
     <section class="sheet active" id="sheet1">
       <div class="hero">
         <div class="eyebrow">ARTE MUSEUM BUSAN</div>
-        <h2 id="lblH1">5월 시스템팀 업무</h2>
+        <h2 id="lblH1">10월 시스템팀 업무</h2>
         <p>업무자별 월 업무와 완료 여부를 기록합니다. 셀을 클릭하면 바로 수정할 수 있고, 행·업무자를 추가/삭제할 수 있습니다.</p>
         <div class="meta-row">
           <div class="meta-item">담당 부서<b>시스템팀</b></div>
-          <div class="meta-item">기록 월<b id="lblMonth1">2026년 5월</b></div>
-          <div class="meta-item">업무자<b id="workerCount">-</b></div>
+          <div class="meta-item">기록 월<b id="lblMonth1">2026년 10월</b></div>
+          <div class="meta-item">업무자<b id="workerCount">3명</b></div>
         </div>
       </div>
 
@@ -283,7 +282,7 @@
             <th style="width:6%"></th>
           </tr>
         </thead>
-        <tbody id="workBody"><!-- injected by JS --></tbody>
+        <tbody id="workBody"><tr><td class="cat" rowspan="3" style="vertical-align: top;"><div contenteditable="true" data-path="workers.0.name" data-ph="이름 입력…" style="font-weight: 700; outline: none; min-height: 1.2em;">고민준 부팀장</div><div style="display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;"><button type="button" class="icon-btn" title="이 업무자에 업무 추가" style="font-size: 11px; padding: 3px 8px; width: auto;">＋ 업무</button><button type="button" class="icon-btn" title="이 업무자 전체 삭제" style="font-size: 11px; padding: 3px 8px; width: auto;">✕ 삭제</button></div></td><td class="item" contenteditable="true" data-path="workers.0.tasks.0.task" data-ph="업무 내용 입력…">프로젝터 렌즈 시리얼 번호 확인 // UDM 필터 교체 및 클리닝 작업</td><td class="center"><label class="check-pill checked"><input type="checkbox" checked=""> 완료</label></td><td class="note" contenteditable="true" data-path="workers.0.tasks.0.note" data-ph="비고…"></td><td><div class="row-actions"><button type="button" class="icon-btn" title="이 업무 삭제">✕</button></div></td></tr><tr><td class="item" contenteditable="true" data-path="workers.0.tasks.1.task" data-ph="업무 내용 입력…">전기직무고시</td><td class="center"><label class="check-pill checked"><input type="checkbox" checked=""> 완료</label></td><td class="note" contenteditable="true" data-path="workers.0.tasks.1.note" data-ph="비고…"></td><td><div class="row-actions"><button type="button" class="icon-btn" title="이 업무 삭제">✕</button></div></td></tr><tr><td class="item" contenteditable="true" data-path="workers.0.tasks.2.task" data-ph="업무 내용 입력…">10월 학단 단체 지원 업무</td><td class="center"><label class="check-pill checked"><input type="checkbox" checked=""> 완료</label></td><td class="note" contenteditable="true" data-path="workers.0.tasks.2.note" data-ph="비고…"></td><td><div class="row-actions"><button type="button" class="icon-btn" title="이 업무 삭제">✕</button></div></td></tr><tr><td class="cat" rowspan="3" style="vertical-align: top;"><div contenteditable="true" data-path="workers.1.name" data-ph="이름 입력…" style="font-weight: 700; outline: none; min-height: 1.2em;">김민수 매니저</div><div style="display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;"><button type="button" class="icon-btn" title="이 업무자에 업무 추가" style="font-size: 11px; padding: 3px 8px; width: auto;">＋ 업무</button><button type="button" class="icon-btn" title="이 업무자 전체 삭제" style="font-size: 11px; padding: 3px 8px; width: auto;">✕ 삭제</button></div></td><td class="item" contenteditable="true" data-path="workers.1.tasks.0.task" data-ph="업무 내용 입력…">프로젝터 렌즈 시리얼 번호 확인&nbsp;// UDM 필터 교체 및 클리닝 작업</td><td class="center"><label class="check-pill checked"><input type="checkbox" checked=""> 완료</label></td><td class="note" contenteditable="true" data-path="workers.1.tasks.0.note" data-ph="비고…"></td><td><div class="row-actions"><button type="button" class="icon-btn" title="이 업무 삭제">✕</button></div></td></tr><tr><td class="item" contenteditable="true" data-path="workers.1.tasks.1.task" data-ph="업무 내용 입력…">산업안전 조치 및 보고서 작성</td><td class="center"><label class="check-pill checked"><input type="checkbox" checked=""> 완료</label></td><td class="note" contenteditable="true" data-path="workers.1.tasks.1.note" data-ph="비고…"></td><td><div class="row-actions"><button type="button" class="icon-btn" title="이 업무 삭제">✕</button></div></td></tr><tr><td class="item" contenteditable="true" data-path="workers.1.tasks.2.task" data-ph="업무 내용 입력…">10월 학단 단체 지원 업무</td><td class="center"><label class="check-pill checked"><input type="checkbox" checked=""> 완료</label></td><td class="note" contenteditable="true" data-path="workers.1.tasks.2.note" data-ph="비고…"></td><td><div class="row-actions"><button type="button" class="icon-btn" title="이 업무 삭제">✕</button></div></td></tr><tr><td class="cat" rowspan="3" style="vertical-align: top;"><div contenteditable="true" data-path="workers.2.name" data-ph="이름 입력…" style="font-weight: 700; outline: none; min-height: 1.2em;">김민성 주임</div><div style="display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;"><button type="button" class="icon-btn" title="이 업무자에 업무 추가" style="font-size: 11px; padding: 3px 8px; width: auto;">＋ 업무</button><button type="button" class="icon-btn" title="이 업무자 전체 삭제" style="font-size: 11px; padding: 3px 8px; width: auto;">✕ 삭제</button></div></td><td class="item" contenteditable="true" data-path="workers.2.tasks.0.task" data-ph="업무 내용 입력…">프로젝터 렌즈 시리얼 번호 확인&nbsp;// UDM 필터 교체 및 클리닝 작업</td><td class="center"><label class="check-pill checked"><input type="checkbox" checked=""> 완료</label></td><td class="note" contenteditable="true" data-path="workers.2.tasks.0.note" data-ph="비고…"></td><td><div class="row-actions"><button type="button" class="icon-btn" title="이 업무 삭제">✕</button></div></td></tr><tr><td class="item" contenteditable="true" data-path="workers.2.tasks.1.task" data-ph="업무 내용 입력…">리프트, 리스킹카 점검</td><td class="center"><label class="check-pill checked"><input type="checkbox" checked=""> 완료</label></td><td class="note" contenteditable="true" data-path="workers.2.tasks.1.note" data-ph="비고…"></td><td><div class="row-actions"><button type="button" class="icon-btn" title="이 업무 삭제">✕</button></div></td></tr><tr><td class="item" contenteditable="true" data-path="workers.2.tasks.2.task" data-ph="업무 내용 입력…">10월 학단 단체 지원 업무</td><td class="center"><label class="check-pill checked"><input type="checkbox" checked=""> 완료</label></td><td class="note" contenteditable="true" data-path="workers.2.tasks.2.note" data-ph="비고…"></td><td><div class="row-actions"><button type="button" class="icon-btn" title="이 업무 삭제">✕</button></div></td></tr></tbody>
       </table>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
         <button class="add-row-btn" data-add="worker" style="flex:1; min-width:180px;">＋ 업무자 추가</button>
@@ -322,7 +321,8 @@ const FIREBASE_CONFIG = {
 
 // 같은 문서를 공유하려면 팀원 모두가 아래 값을 동일하게 유지해야 합니다.
 // 현재 보고 있는 연/월 (월별로 데이터가 분리 저장됩니다)
-let curYear = 2026, curMonth = 5;
+var _today = new Date();
+let curYear = _today.getFullYear(), curMonth = _today.getMonth() + 1;   // 열 때 항상 '현재 월'로 시작
 function roomId(){ return "work-" + curYear + "-" + String(curMonth).padStart(2, "0"); }
 function localKey(){ return "ambs_facility_local_" + roomId(); }
 /* ▲▲▲  여기까지만 수정하세요  ▲▲▲ */
@@ -334,25 +334,7 @@ function localKey(){ return "ambs_facility_local_" + roomId(); }
    · DEFAULT_DATA : 매월 반복되는 기본 템플릿 (완료여부·비고 비어 있음)
    · MAY_DATA     : 2026년 5월 실제 업무 내역 (원본 엑셀 반영)
 --------------------------------------------------------------------- */
-const DEFAULT_DATA = {
-  workers: [
-    { name:"고민준 부팀장", tasks:[
-      {task:"", done:false, note:""},
-      {task:"", done:false, note:""},
-      {task:"", done:false, note:""}
-    ]},
-    { name:"김민수 매니저", tasks:[
-      {task:"", done:false, note:""},
-      {task:"", done:false, note:""},
-      {task:"", done:false, note:""}
-    ]},
-    { name:"김민성 주임", tasks:[
-      {task:"", done:false, note:""},
-      {task:"", done:false, note:""},
-      {task:"", done:false, note:""}
-    ]}
-  ]
-};
+const DEFAULT_DATA = {"workers":[{"name":"고민준 부팀장","tasks":[{"done":true,"note":"","task":"프로젝터 렌즈 시리얼 번호 확인 // UDM 필터 교체 및 클리닝 작업"},{"done":true,"note":"","task":"전기직무고시"},{"done":true,"note":"","task":"10월 학단 단체 지원 업무"}]},{"name":"김민수 매니저","tasks":[{"done":true,"note":"","task":"프로젝터 렌즈 시리얼 번호 확인 // UDM 필터 교체 및 클리닝 작업"},{"done":true,"note":"","task":"산업안전 조치 및 보고서 작성"},{"done":true,"note":"","task":"10월 학단 단체 지원 업무"}]},{"name":"김민성 주임","tasks":[{"done":true,"note":"","task":"프로젝터 렌즈 시리얼 번호 확인 // UDM 필터 교체 및 클리닝 작업"},{"done":true,"note":"","task":"리프트, 리스킹카 점검"},{"done":true,"note":"","task":"10월 학단 단체 지원 업무"}]}]};
 
 const MAY_DATA = {
   workers: [
@@ -842,5 +824,6 @@ initSync();
 renderAll();
 setSaved();
 </script>
-</body>
-</html>
+
+
+</body></html>
