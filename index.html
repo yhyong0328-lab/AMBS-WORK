@@ -367,6 +367,8 @@ let dataRef = null, presenceRef = null;
 let firebaseReady = false;
 let applyingRemote = false;
 let saveTimer = null;
+let roomLoaded = false;   // 이 달의 '진짜' 서버 데이터를 받기 전엔 저장 금지 (덮어쓰기 방지)
+let lastBackupKey = "";   // 하루 1회 자동 백업 중복 방지
 
 function configFilled(){
   try { return window.firebase && !FIREBASE_CONFIG.apiKey.includes("여기에"); }
@@ -384,6 +386,10 @@ function setSaved(){
   const prefix = firebaseReady ? "실시간 동기화됨 · " : "로컬 저장됨 · ";
   el.textContent = prefix + new Date().toLocaleTimeString('ko-KR');
   el.classList.remove('dirty');
+}
+function setLoading(){
+  const el = document.getElementById('saveState');
+  if(el){ el.textContent = "불러오는 중…"; el.classList.add('dirty'); }
 }
 let isConnected = false;
 let presenceCount = 1;
@@ -456,13 +462,18 @@ function subscribeRoom(){
   presenceRef = db.ref('rooms/' + roomId() + '/presence');
   myPresenceRef = presenceRef.child(CLIENT_ID);
 
+  roomLoaded = false;   // 아직 이 달의 서버 데이터를 못 받음 → 저장 금지 (덮어쓰기 방지)
+  setLoading();
+
   // 이 달이 비어 있으면 기본 데이터로 초기화 (5월은 실제 업무내역, 그 외 달은 빈 템플릿)
   dataRef.once('value').then(function(snap){
     if(!snap.exists()){
       var seed = (roomId() === "work-2026-05") ? MAY_DATA : DEFAULT_DATA;
       DATA = normalizeData(JSON.parse(JSON.stringify(seed)));
       renderAll();
+      roomLoaded = true;            // 이 방을 우리가 처음 만드는 것이므로 저장 허용
       dataRef.set(wrap(DATA));
+      setSaved();
     }
   });
 
@@ -470,6 +481,8 @@ function subscribeRoom(){
   dataRef.on('value', function(snap){
     const val = snap.val();
     if(!val || !val.data) return;
+    roomLoaded = true;              // 서버의 진짜 데이터를 받음 → 이제 저장 허용
+    maybeBackup(val.data);          // 하루 1회 자동 백업
     if(val.by === CLIENT_ID) return;
     applyRemote(val.data);
   });
@@ -501,6 +514,7 @@ function changeMonth(delta){
 
   updateMonthLabels();
   // 화면을 즉시 빈(기본) 상태로 리셋 — 이전 달 내용이 잠깐 보이지 않게
+  roomLoaded = false;   // 새 달 데이터를 받기 전까진 저장 금지 (덮어쓰기 방지)
   DATA = normalizeData(JSON.parse(JSON.stringify(DEFAULT_DATA)));
   renderAll();
 
@@ -530,8 +544,41 @@ function setLabel(id, text){ const el = document.getElementById(id); if(el) el.t
 
 function wrap(d){ return { data: d, by: CLIENT_ID, at: Date.now() }; }
 
+// 이 달 데이터에 '실제 입력된 내용'이 있는지 (빈 상태면 백업하지 않음)
+function hasContent(d){
+  try {
+    var arr = (d && d.workers) ? d.workers : [];
+    for(var i=0;i<arr.length;i++){
+      var ts = arr[i].tasks || [];
+      for(var j=0;j<ts.length;j++){
+        if(ts[j].done) return true;
+        if(ts[j].note && String(ts[j].note).trim()) return true;
+      }
+    }
+  } catch(e){}
+  return false;
+}
+
+// 하루에 한 번, 현재 서버 데이터를 날짜별 백업 경로에 복사 (실수로 지워져도 복구 가능)
+function maybeBackup(serverData){
+  try {
+    if(!firebaseReady || !db) return;
+    if(!hasContent(serverData)) return;           // 빈 상태는 백업하지 않음
+    var t = new Date();
+    var ymd = t.getFullYear() + "-" + String(t.getMonth()+1).padStart(2,"0") + "-" + String(t.getDate()).padStart(2,"0");
+    var key = roomId() + "/" + ymd;
+    if(lastBackupKey === key) return;             // 이 달+오늘 조합은 이미 백업함
+    lastBackupKey = key;
+    db.ref('rooms/' + roomId() + '/_backup/' + ymd).set({ data: serverData, at: Date.now() });
+  } catch(e){ console.warn("백업 건너뜀:", e); }
+}
+
 function pushData(){
   if(firebaseReady && dataRef){
+    if(!roomLoaded){
+      console.warn("아직 이 달 데이터를 불러오는 중 — 저장을 건너뜁니다 (덮어쓰기 방지).");
+      return;
+    }
     dataRef.set(wrap(DATA)).then(setSaved).catch(function(err){
       console.warn("저장 실패:", err);
     });
